@@ -1,5 +1,24 @@
 var taskIdCounter = 0;
-var tasks = [];
+var tasks = [
+  {
+    id: 1,
+    name: "Add localStorage persistence",
+    type: "Web",
+    status: "in progress"
+  },
+  {
+    id: 2,
+    name: "Learn JavaScript",
+    type: "Web",
+    status: "in progress"
+  },
+  {
+    id: 3,
+    name: "Refactor code",
+    type: "Web",
+    status: "to do"
+  }
+];
 var formEl = document.querySelector("#task-form")
 var tasksToDoEl = document.querySelector("#tasks-to-do");
 var pageContentEl = document.querySelector("#page-content");
@@ -32,7 +51,6 @@ var taskFormHandler = function(event) {
     //send it as an argument to createTaskEl
     createTaskEl(taskDataObj);
     }
-   
   }
 
   var createTaskEl = function(taskDataObj){
@@ -63,23 +81,18 @@ var taskFormHandler = function(event) {
   var createTaskActions = function(taskId) {
     var actionContainerEl = document.createElement("div");
     actionContainerEl.className = "task-actions";
-
     // create edit button
     var editButtonEl = document.createElement("button");
     editButtonEl.textContent = "Edit";
     editButtonEl.className = "btn edit-btn";
     editButtonEl.setAttribute("data-task-id", taskId);
-
     actionContainerEl.appendChild(editButtonEl);
-
     // create delete button
     var deleteButtonEl = document.createElement("button");
     deleteButtonEl.textContent = "Delete";
     deleteButtonEl.className = "btn delete-btn";
     deleteButtonEl.setAttribute("data-task-id", taskId);
-
     actionContainerEl.appendChild(deleteButtonEl);
-    
     //create select scroll
     var statusSelectEl = document.createElement("select");
     statusSelectEl.className = "select-status";
@@ -91,13 +104,10 @@ var taskFormHandler = function(event) {
       var statusOptionEl = document.createElement("option");
       statusOptionEl.textContent = statusChoices[i];
       statusOptionEl.setAttribute("value", statusChoices[i]);
-    
       // append to select
       statusSelectEl.appendChild(statusOptionEl);
     }
-
     actionContainerEl.appendChild(statusSelectEl);
-
     return actionContainerEl;
   };
 
@@ -236,6 +246,21 @@ var taskFormHandler = function(event) {
   var saveTasks = function(){
     localStorage.setItem("tasks", JSON.stringify(tasks));
   };
+
+  var loadTasks = function() {
+    var savedTasks = localStorage.getItem("tasks");
+  
+    if (!savedTasks) {
+      return false;
+    }
+  
+    savedTasks = JSON.parse(savedTasks);
+    // loop through savedTasks array
+    for (var i = 0; i < savedTasks.length; i++) {
+    // pass each task object into the `createTaskEl()` function
+    createTaskEl(savedTasks[i]);
+}
+  }
   
   formEl.addEventListener("submit", taskFormHandler);
   pageContentEl.addEventListener("click", taskButtonHandler);
@@ -245,3 +270,4 @@ var taskFormHandler = function(event) {
   pageContentEl.addEventListener("drop", dropTaskHandler);
   pageContentEl.addEventListener("dragleave", dragLeaveHandler);
   
+  loadTasks();
